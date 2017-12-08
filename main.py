@@ -1,13 +1,16 @@
 import json
 import sys
 
-from scraper import scraper_factory
+import requests
+
+from scraper import scraper_factory, parse, selectors
 
 def formatter(data):
     " "
     raw = json.dumps(data)
 
 class Property(object):
+    " worth having a class? "
     def __init__(self, bedrooms, prop_type, ameniies, **kwargs):
         # don't like the explitnes of this
         self.bedrooms = bedrooms
@@ -31,6 +34,19 @@ class Property(object):
 if __name__ == '__main__':
     # this approach expects to read from stdin
     # a la curl $url | python airbnb_scraper
-    html = sys.stdin().read()
+
+    # TODO validate urls?
+    for url_in in sys.stdin:
+        try:
+            url = url_in.strip()
+            data = requests.get(url)
+        except requests.exceptions.RequestException as e:
+            data = dict(error=e)
+
+    soup = BeautifulSoup(t, 'html.parser')
+    js = extract_redux(soup)
+    props = listing_properties(js)
+    print(json.dumps(props))
+    
     scraper = scraper_factory('airbnb', html)
     property = Property.from_scrape(scraper)
