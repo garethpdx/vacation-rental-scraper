@@ -1,7 +1,10 @@
 import unittest
 
+from bs4 import BeautifulSoup
+
 from scraper.parse import nested_get
 from scraper.base import TransformExtractor
+from scraper.vendors.airbnb import preprocessor
 
 NESTED_DICT = {'properties':
                {'initial':
@@ -40,6 +43,15 @@ class ExtractorTests(unittest.TestCase):
             return chars[0]
         s = TransformExtractor("february", nested_get, transform=first_char)
         self.assertEqual(s.extract(NESTED_DICT), "1")
+
+
+class AirBNBTest(unittest.TestCase):
+    def test_preprocessor(self):
+        html = ("<html><body><script type='application/json' data-hypernova" +
+                "-key='spaspabundlejs'>  <!--{}--></script><p>first</p><p c" +
+                "lass='find'>second</p></body></html>")
+        soup = BeautifulSoup(html, "html.parser")
+        self.assertEqual(preprocessor(soup), dict())
 
 
 if __name__ == '__main__':

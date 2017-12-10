@@ -57,9 +57,9 @@ def _clean_repr(script_string):
     """
     Property representation lives within an html comment
 
-    "<!--{}-->" => "{}"
+    "   <!--{}-->  " => "{}"
     """
-    return script_string[4:-3]
+    return script_string.strip()[4:-3]
 
 
 def preprocessor(soup):
