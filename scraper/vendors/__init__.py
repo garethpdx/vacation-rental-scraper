@@ -1,7 +1,7 @@
 " New vendors must be registered here in the vendors dict "
 
 from scraper.vendors.airbnb import selectors, preprocessor
-from scraper.base import PropertyScraper
+from scraper.base import HtmlPropertyScraper
 
 
 class UnrecognizedVendor(KeyError):

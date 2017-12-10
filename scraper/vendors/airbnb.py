@@ -1,30 +1,24 @@
 """
 
-Airbnb uses redux, react[1], and hypernova[2] for content rendering
-
-[1] https://github.com/airbnb/hypernova-react
-[2] https://github.com/airbnb/hypernova
+Airbnb uses redux, react[1], and hypernova[2] for content rendering.
 
 As a consequence, a copy of a property's details are available in a redux
 script object.
 
-The relevant script can be identified with a data attribute of 
+The relevant script can be found in a script with a data attribute of
 hypernova-key=spaspabundlejs
 
 The data is hidden within an html comment. Once uncommented, we have vanilla
 JSON that can be converted into a dict
 
-could go in a class
-
-AirBNBPropertyScraper
-
-but would still need a factory to choose the right class
-from scraper.base import TransformExtractor, ParseError
-from scraper.parse import nested_get
-
 """
 
 import json
+
+from scraper.base import TransformExtractor, ParseError
+from scraper.parse import nested_get
+
+
 def _is_amenity_present(amenity):
     return (
         # yes if is_present==True
@@ -70,8 +64,8 @@ def _clean_repr(script_string):
 
 def preprocessor(soup):
     """
-    details of an Airbnb property are in a redux json object hidden
-    within a comment
+    Preprocess an Airbnb scrape by finding the JSON representation
+    and returning it. That way extractors can work with it as a dict.
     """
     scripts = soup.findAll('script')
     for script in scripts:

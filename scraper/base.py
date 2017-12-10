@@ -1,10 +1,18 @@
 """
 
+Base objects used for scraping property data and selected elements
+within said data.
+
+PropertyScrapers take a list of extractors and a preprocessor, then apply
+both to scraped content. To support additional vendors, it's likely
+possible to simply write new selectors and a new preprocessor, but implementing
+a new PropertyScraper is also an option when necessary.
+
+Extractors use a selector to retrieve information from content by locating,
+extracting, and optionally transforming it.
+
 """
 from bs4 import BeautifulSoup
-
-from scraper.parse import nested_get
-
 
 
 class HtmlPropertyScraper(object):
