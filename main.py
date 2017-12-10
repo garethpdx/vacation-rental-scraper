@@ -17,6 +17,7 @@ if __name__ == '__main__':
             response = requests.get(url.strip())
             html = response.text
             property = scraper.scrape(html)
+            property['url'] = url
             properties.append(property)
         except Exception as e:
             properties.append({"error": e,
