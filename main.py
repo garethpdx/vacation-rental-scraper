@@ -1,27 +1,25 @@
 import json
 import sys
-import pprint
 
-from bs4 import BeautifulSoup
 import requests
 
-from scraper.scraper import scraper_factory
-from scraper.parse import extract_redux
+from scraper.vendors import scraper_factory
 
 
 if __name__ == '__main__':
-    # this approach expects to read from stdin
+    properties = []
+    try:
 
-    # TODO validate urls
-    for url_in in sys.stdin:
-        try:
-            url = url_in.strip()
-            data = requests.get(url).text
-        except requests.exceptions.RequestException as e:
-            data = dict(error=e)
-
-    soup = BeautifulSoup(data, 'html.parser')
-    js = extract_redux(soup)
-    scraper = scraper_factory(vendor='airbnb')
-    props = scraper.scrape(js)
-    pprint.pprint(json.dumps(props))
+        # read urls from stdin
+        for url in sys.stdin:
+            # TODO what if 2nd url explodes?
+            response = requests.get(url.strip())
+            html = response.text
+            # if adding additional vendors, get vendor from URL or user
+            scraper = scraper_factory(vendor='airbnb')
+            property = scraper.scrape(html)
+            properties.append(property)
+        print(json.dumps(properties))
+    except Exception as e:
+        print json.dumps({"error": e,
+                          "msg": "Unable to scrape property listing."})
