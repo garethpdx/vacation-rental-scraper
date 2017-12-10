@@ -25,8 +25,17 @@ from scraper.parse import nested_get
 """
 
 import json
+def _is_amenity_present(amenity):
+    return (
+        # yes if is_present==True
+        amenity['is_present'] and
+        # safety features aren't visually rendered in the list of amenities,
+        # so leave them out here too
+        not amenity['is_safety_feature'])
 
-from scraper.base import TransformSelector, Selector, ParseError
+
+def _amenity_name(amenity):
+    return amenity['name']
 
 selectors = {
     'bedrooms': TransformExtractor('bedroom_label',
@@ -39,6 +48,24 @@ selectors = {
                                     lambda amenities: [_amenity_name(amenity)
                                                        for amenity in amenities
                                                        if _is_amenity_present(amenity)])
+}
+
+
+def _is_repr(bs_script_tag):
+    """
+    Property representation is found in string of hypernova script e.g.
+    <script data-hypernova-key="spaspabundlejs">{object}</script>
+    """
+    return bs_script_tag.get('data-hypernova-key') == 'spaspabundlejs'
+
+
+def _clean_repr(script_string):
+    """
+    Property representation lives within an html comment
+
+    "<!--{}-->" => "{}"
+    """
+    return script_string[4:-3]
 
 
 def preprocessor(soup):
@@ -48,8 +75,8 @@ def preprocessor(soup):
     """
     scripts = soup.findAll('script')
     for script in scripts:
-        if is_repr(script):
-            js = clean_repr(script.string)
+        if _is_repr(script):
+            js = _clean_repr(script.string)
             break
     else:
         raise ParseError("Could not parse. No hypernova properties found.")
@@ -57,20 +84,3 @@ def preprocessor(soup):
         return json.loads(js)
     except json.JSONDecodeError as e:
         raise ParseError(e)
-
-
-def is_repr(bs_script):
-    """
-    object representation is in string of hypernova script e.g.
-    <script data-hypernova-key="spaspabundlejs">{object}</script>
-    """
-    # could be get() (like dict)
-    return (bs_script.has_attr('data-hypernova-key') and
-            bs_script.attrs['data-hypernova-key'] == 'spaspabundlejs')
-
-
-def clean_repr(script_string):
-    """
-    "<!--{}-->" => "{}"
-    """
-    return script_string[4:-3]
