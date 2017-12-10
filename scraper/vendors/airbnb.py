@@ -1,6 +1,6 @@
 """
 
-airbnb uses redux, react[1], and hypernova[2] for content rendering
+Airbnb uses redux, react[1], and hypernova[2] for content rendering
 
 [1] https://github.com/airbnb/hypernova-react
 [2] https://github.com/airbnb/hypernova
@@ -8,10 +8,11 @@ airbnb uses redux, react[1], and hypernova[2] for content rendering
 As a consequence, a copy of a property's details are available in a redux
 script object.
 
-The script can be identified with a data attribute of hypernova-key=spaspabundlejs
+The relevant script can be identified with a data attribute of 
+hypernova-key=spaspabundlejs
 
-The data is hidden within an html comment. Once uncommented, we have vanilla JSON
-that can be converted into a dict
+The data is hidden within an html comment. Once uncommented, we have vanilla
+JSON that can be converted into a dict
 
 could go in a class
 
@@ -30,19 +31,19 @@ selectors = {
                                   # 1 bedrooms
                                   lambda label: label.split(' ')[0]),
     'property_type': TransformSelector('room_type_category'),
-    'ameniies': TransformSelector('listing_amenities',
-                                  lambda amenities: list(
-                                      map(lambda amenity: amenity['name'],
-                                          # if not is_present, then property doesn't have the feature
-                                          # also, safety features aren't displayed in the list of amenities
-                                          filter(lambda amenity: (amenity['is_present'] and
-                                                                  not amenity['is_safety_feature']),
-                                                 amenities))))}
+    'amenities': TransformSelector('listing_amenities',
+                                   lambda amenities: list(
+                                       map(lambda amenity: amenity['name'],
+                                           # if not is_present, then property doesn't have the feature
+                                           # also, safety features aren't displayed in the list of amenities
+                                           filter(lambda amenity: (amenity['is_present'] and
+                                                                   not amenity['is_safety_feature']),
+                                                  amenities))))}
 
 
 def preprocessor(soup):
     """
-    details of an airbnb property are in a redux json object hidden
+    details of an Airbnb property are in a redux json object hidden
     within a comment
     """
     scripts = soup.findAll('script')
