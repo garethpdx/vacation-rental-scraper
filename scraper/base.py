@@ -1,35 +1,49 @@
-from scraper.parse import key_value
+"""
+
+"""
+from bs4 import BeautifulSoup
+
+from scraper.parse import nested_get
 
 
 class PropertyScraper(object):
-    def __init__(self, selectors):
+
+    def __init__(self, selectors, preprocessor):
         self.selectors = selectors
+        self.preprocessor = preprocessor
 
-    def scrape(self, soup):
-        property = {}
+    def scrape(self, html):
+        " get content identified by selectors "
+        soup = BeautifulSoup(html, 'html.parser')
+        content = self.preprocessor(soup)
+        properties = {}
         for selector in self.selectors:
-            property[selector] = self.selectors[selector].parse(soup)
-        return property
-
-
+            properties[selector] = self.selectors[selector].parse(content)
+        return properties
 
 
 class Selector(object):
-    def __init__(self, redux_key):
-        self.redux_key = redux_key
+    " Base class for parser selectors "
 
-    def parse(self, redux):
-        return key_value(redux, self.redux_key)
+    def __init__(self, selector, transformation=None, *args, **kwargs):
+        self.selector = selector
+        if transformation:
+            self.transformation = transformation
+
+    def parse(self, data, *args, **kwargs):
+        " fetch raw data at selector"
+        raise NotImplementedError()
+
+    def transformation(self, raw_value, *args, **kwargs):
+        return raw_value
 
 
 class TransformSelector(Selector):
 
-    def __init__(self, redux_key, transformation):
-        self.transformation = transformation
-        super(TransformSelector, self).__init__(redux_key)
-
-    def parse(self, redux):
-        raw = super(TransformSelector, self).parse(redux)
+    def parse(self, data):
+        raw = nested_get(data, self.selector)
         return self.transformation(raw)
 
 
+class ParseError(TypeError):
+    " Failed to parse property content "
