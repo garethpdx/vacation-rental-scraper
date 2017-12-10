@@ -1,6 +1,4 @@
-"""
-New vendors must be registered here in the vendors dict
-"""
+" New vendors must be registered here in the vendors dict "
 
 from scraper.vendors.airbnb import selectors, preprocessor
 from scraper.base import PropertyScraper
