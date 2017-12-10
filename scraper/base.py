@@ -12,9 +12,6 @@ class PropertyScraper(object):
         return property
 
 
-def scraper_factory(vendor):
-    # TODO  might have a bad vendor name here
-    return PropertyScraper(selectors[vendor])
 
 
 class Selector(object):
