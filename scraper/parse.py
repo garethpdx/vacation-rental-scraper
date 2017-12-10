@@ -61,13 +61,6 @@ def listing_properties(redux):
                 type=key_value(js, 'room_type_category'),
                 amenities=list(amenities))
     
-
-if __name__ == '__main__':
-    t = ''
-    property_id = '19292873'
-    with codecs.open(property_id, encoding='utf-8') as f:
-        t = f.read()
-    soup = BeautifulSoup(t, 'html.parser')
-    js = extract_redux(soup)
-    props = listing_properties(js)
-    print(json.dumps(props))
+    except AttributeError:
+        # ignore values that don't quack like a dict
+        pass
