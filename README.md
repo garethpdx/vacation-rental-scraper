@@ -1,10 +1,11 @@
 # Vacation Rental Scraper
 
-Extract property details from short-term rental listing by downloading and processing a listing, then running predefined extractors against the parsed property information. When run from the command line, scraped details are printed as JSON objects.
+Extract property details from short-term rental listings by downloading and processing a listing, then running predefined extractors against the parsed property information. When run from the command line, scraped details are printed as JSON objects.
 
 Initially, only Airbnb is supported. To retrieve Airbnb property information, this project takes advantage of the fact that Airbnb's use of redux, react[1], and hypernova[2] means that a full representation of a property can be found in JSON embedded within the listing.
 
 [1] https://github.com/airbnb/hypernova-react
+
 [2] https://github.com/airbnb/hypernova
 
 ## Getting Started
