@@ -38,29 +38,6 @@ def key_value(d, needle):
     for key in path:
         d = d.get(key)
     return d
-
-def extract_redux(soup):
-    scripts = soup.findAll('script')
-    
-    for script in scripts:
-        if script.has_attr('data-hypernova-key') and script.attrs['data-hypernova-key'] == 'spaspabundlejs':
-            commented_js = script.string
-    
-    return json.loads(commented_js[4:-3])
-
-def listing_properties(redux):
-
-    amenities = map(lambda x: x['name'],
-                    # if not is_present, then property doesn't have the feature
-                    # also, safety features aren't displayed in the list of amenities
-                    filter(lambda y: y['is_present'] and not y['is_safety_feature'],
-                           key_value(js, 'listing_amenities')))
-
-    return dict(property_id=property_id,
-                bedrooms=key_value(js, 'bedroom_label').split(' ')[0],
-                type=key_value(js, 'room_type_category'),
-                amenities=list(amenities))
-    
     except AttributeError:
         # ignore values that don't quack like a dict
         pass

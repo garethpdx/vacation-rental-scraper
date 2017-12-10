@@ -36,17 +36,3 @@ class TransformSelector(Selector):
         return self.transformation(raw)
 
 
-# TODO - better lambda than x
-# TODO - bedroom handle studio?
-
-selectors = {'airbnb': {'bedrooms': TransformSelector('bedroom_label',
-                                                      # 1 bedrooms
-                                                      lambda x: x.split(' ')[0]),
-                        'property_type': Selector('room_type_category'),
-                        'ameniies': TransformSelector('listing_amenities',
-                                                      lambda x: list(
-                                                          map(lambda x: x['name'],
-                                                              # if not is_present, then property doesn't have the feature
-                                                              # also, safety features aren't displayed in the list of amenities
-                                                              filter(lambda y: y['is_present'] and not y['is_safety_feature'],
-                                                                     x))))}}
