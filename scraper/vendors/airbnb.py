@@ -19,6 +19,8 @@ could go in a class
 AirBNBPropertyScraper
 
 but would still need a factory to choose the right class
+from scraper.base import TransformExtractor, ParseError
+from scraper.parse import nested_get
 
 """
 
@@ -27,18 +29,16 @@ import json
 from scraper.base import TransformSelector, Selector, ParseError
 
 selectors = {
-    'bedrooms': TransformSelector('bedroom_label',
-                                  # 1 bedrooms
-                                  lambda label: label.split(' ')[0]),
-    'property_type': TransformSelector('room_type_category'),
-    'amenities': TransformSelector('listing_amenities',
-                                   lambda amenities: list(
-                                       map(lambda amenity: amenity['name'],
-                                           # if not is_present, then property doesn't have the feature
-                                           # also, safety features aren't displayed in the list of amenities
-                                           filter(lambda amenity: (amenity['is_present'] and
-                                                                   not amenity['is_safety_feature']),
-                                                  amenities))))}
+    'bedrooms': TransformExtractor('bedroom_label',
+                                   nested_get,
+                                   #  e.g. bedroom_label: '1 bedrooms'
+                                   lambda value: value.split(' ')[0]),
+    'property_type': TransformExtractor('room_type_category', nested_get),
+    'amenities': TransformExtractor('listing_amenities',
+                                    nested_get,
+                                    lambda amenities: [_amenity_name(amenity)
+                                                       for amenity in amenities
+                                                       if _is_amenity_present(amenity)])
 
 
 def preprocessor(soup):

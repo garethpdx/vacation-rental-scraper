@@ -11,7 +11,7 @@ class UnrecognizedVendor(KeyError):
 
 def scraper_factory(vendor):
     try:
-        return PropertyScraper(*vendors[vendor])
+        return HtmlPropertyScraper(*vendors[vendor])
     except KeyError as e:
         raise UnrecognizedVendor(e)
 

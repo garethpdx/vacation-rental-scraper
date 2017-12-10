@@ -6,43 +6,41 @@ from bs4 import BeautifulSoup
 from scraper.parse import nested_get
 
 
-class PropertyScraper(object):
 
-    def __init__(self, selectors, preprocessor):
-        self.selectors = selectors
+class HtmlPropertyScraper(object):
+    " Extract selectors from a parsed property. "
+    def __init__(self, extractors, preprocessor):
+        self.extractors = extractors
         self.preprocessor = preprocessor
 
-    def scrape(self, html):
-        " get content identified by selectors "
-        soup = BeautifulSoup(html, 'html.parser')
-        content = self.preprocessor(soup)
+    def scrape(self, raw):
+        " Fetch and parse html elements identified by selectors. "
         properties = {}
-        for selector in self.selectors:
-            properties[selector] = self.selectors[selector].parse(content)
+        parsed = self.parse(raw)
+        for extractor in self.extractors:
+            properties[extractor] = self.extractors[extractor].extract(parsed)
         return properties
 
+    def parse(self, raw):
+        soup = BeautifulSoup(raw, 'html.parser')
+        return self.preprocessor(soup)
 
-class Selector(object):
-    " Base class for parser selectors "
 
-    def __init__(self, selector, transformation=None, *args, **kwargs):
+class TransformExtractor(object):
+    " What and how to find, and what to do after finding "
+    def __init__(self, selector, locate, transform=None, *args, **kwargs):
         self.selector = selector
-        if transformation:
-            self.transformation = transformation
+        self.locate = locate
+        if transform:
+            self.transform = transform
 
-    def parse(self, data, *args, **kwargs):
-        " fetch raw data at selector"
-        raise NotImplementedError()
+    def extract(self, data):
+        raw = self.locate(data, self.selector)
+        return self.transform(raw)
 
-    def transformation(self, raw_value, *args, **kwargs):
+    def transform(self, raw_value, *args, **kwargs):
+        " Default transform just returns raw value "
         return raw_value
-
-
-class TransformSelector(Selector):
-
-    def parse(self, data):
-        raw = nested_get(data, self.selector)
-        return self.transformation(raw)
 
 
 class ParseError(TypeError):

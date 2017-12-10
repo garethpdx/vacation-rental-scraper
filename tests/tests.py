@@ -1,7 +1,7 @@
 import unittest
 
 from scraper.parse import nested_get
-from scraper.base import TransformSelector
+from scraper.base import TransformExtractor
 
 NESTED_DICT = {'properties':
                {'initial':
@@ -29,17 +29,17 @@ class DictTest(unittest.TestCase):
         self.assertEqual(nested_get(NESTED_DICT, 'april'), None)
 
 
-class SelectorTests(unittest.TestCase):
+class ExtractorTests(unittest.TestCase):
 
-    def test_simple_selector(self):
-        s = TransformSelector("february")
-        self.assertEqual(s.parse(NESTED_DICT), "1d93")
+    def test_simple_extractor(self):
+        s = TransformExtractor("february", nested_get)
+        self.assertEqual(s.extract(NESTED_DICT), "1d93")
 
-    def test_selector_transform(self):
+    def test_extractor_transform(self):
         def first_char(chars):
             return chars[0]
-        s = TransformSelector("february", first_char)
-        self.assertEqual(s.parse(NESTED_DICT), "1")
+        s = TransformExtractor("february", nested_get, transform=first_char)
+        self.assertEqual(s.extract(NESTED_DICT), "1")
 
 
 if __name__ == '__main__':
